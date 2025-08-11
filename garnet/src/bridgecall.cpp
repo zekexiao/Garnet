@@ -96,16 +96,16 @@ bool tryInvokeMethod(QObject *object, const QMetaMethod &method, const QVariantL
     return tryInvoke(method, params,
                     [&](const std::array<QGenericArgument, 10> &args) {
 
-        int returnType = method.returnType();
-        auto returnBuffer = QMetaType::create(returnType);
+        auto returnType = method.returnMetaType();
+        auto returnBuffer = returnType.create();
         bool result = method.invoke(object,
-                                    QGenericReturnArgument(QMetaType::typeName(returnType), returnBuffer),
+                                    QGenericReturnArgument(returnType.name(), returnBuffer),
                                     args[0],args[1],args[2],args[3],args[4],
                                     args[5],args[6],args[7],args[8],args[9]);
         if (result) {
-            *returnValue = QVariant(returnType, returnBuffer);
+            *returnValue = QVariant::fromMetaType(returnType, returnBuffer);
         }
-        QMetaType::destroy(returnType, returnBuffer);
+        returnType.destroy(returnBuffer);
         return result;
     });
 }

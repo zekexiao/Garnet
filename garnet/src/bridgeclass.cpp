@@ -3,6 +3,7 @@
 #include "engine.h"
 #include <mruby/class.h>
 #include <QMetaMethod>
+#include <QByteArray>
 
 namespace Garnet {
 
@@ -91,7 +92,7 @@ mrb_value BridgeClass::newFromObject(QObject *object, bool willOwnObject)
     *data = BridgeData(object, willOwnObject);
 
     registerMethods(object->metaObject(), [&](const QByteArray &name, mrb_func_t impl) {
-        mrb_define_singleton_method(mrb, mrb_object(value), name, impl, ARGS_NONE());
+        mrb_define_singleton_method(mrb, mrb_obj_ptr(value), name, impl, MRB_ARGS_ANY());
     });
 
     return value;
@@ -126,7 +127,7 @@ void StaticBridgeClassManager::define(const QMetaObject *metaObject)
 
     mrb_define_method(mrb, klass, "initialize", initialize_impl, MRB_ARGS_REQ(1));
     registerMethods(metaObject, [&](const QByteArray &name, mrb_func_t impl) {
-        mrb_define_method(mrb, klass, name, impl, ARGS_NONE());
+        mrb_define_method(mrb, klass, name, impl, MRB_ARGS_ANY());
     });
 
     metaClassHash_[metaObject->className()] = metaObject;

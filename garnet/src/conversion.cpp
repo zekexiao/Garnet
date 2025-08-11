@@ -30,7 +30,7 @@ QString qStringFromString(mrb_state *mrb, mrb_value value)
 
 QString qStringFromSymbol(mrb_state *mrb, mrb_value value)
 {
-    size_t len;
+    mrb_int len;
     auto data = mrb_sym2name_len(mrb, mrb_obj_to_sym(mrb, value), &len);
     return QString::fromUtf8(data, len);
 }
@@ -184,7 +184,7 @@ QVariant toQVariant(mrb_state *mrb, mrb_value value)
         return true;
     case MRB_TT_FALSE:
         return false;
-    case MRB_TT_FIXNUM:
+    case MRB_TT_INTEGER:
         return mrb_fixnum(value);
     case MRB_TT_FLOAT:
         return mrb_float(value);
@@ -196,7 +196,7 @@ QVariant toQVariant(mrb_state *mrb, mrb_value value)
         return qVariantListFromArray(mrb, value);
     case MRB_TT_HASH:
         return qVariantHashLikeFromHash<QVariantHash>(mrb, value);
-    case MRB_TT_DATA:
+    case MRB_TT_CDATA:
         if (DATA_TYPE(value) == &BridgeData::dataType) {
             return QVariant::fromValue(qObjectStarFromBridgeClass(mrb, value));
         }
