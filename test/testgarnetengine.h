@@ -7,7 +7,7 @@ class TestGarnetEngine : public QObject
 {
     Q_OBJECT
 public:
-    explicit TestGarnetEngine(QObject *parent = 0);
+    explicit TestGarnetEngine(QObject *parent = nullptr);
 
 private slots:
     void testError();

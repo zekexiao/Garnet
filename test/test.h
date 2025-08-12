@@ -10,7 +10,7 @@ class TestObject : public QObject
     Q_PROPERTY(QString text MEMBER text_)
 
 public:
-    Q_INVOKABLE TestObject() {}
+    Q_INVOKABLE TestObject() = default;
     Q_INVOKABLE TestObject(const QString &text)
         : text_(text)
     {}

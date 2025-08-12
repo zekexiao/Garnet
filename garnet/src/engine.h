@@ -28,9 +28,9 @@ public:
     Q_INVOKABLE void collectGarbage();
     Q_INVOKABLE QVariant evaluate(const QString &script, const QString &fileName = "*script*");
 
-    bool hasError() const;
-    QString error() const;
-    QStringList backtrace() const;
+    [[nodiscard]] bool hasError() const;
+    [[nodiscard]] QString error() const;
+    [[nodiscard]] QStringList backtrace() const;
 
     template<class T>
     void registerClass()

@@ -14,8 +14,8 @@ QObject *toQObject(mrb_state *mrb, mrb_value value);
 
 using ToValue = std::function<mrb_value(mrb_state *, const QVariant &)>;
 using ToVariant = std::function<bool(mrb_state *, mrb_value, QVariant *)>;
-void registerConverter(const QList<int> &metaTypes, const ToValue func);
-void registerConverter(const ToVariant func);
+void registerConverter(const QList<int> &metaTypes, const ToValue &func);
+void registerConverter(const ToVariant &func);
 
 } // namespace Conversion
 

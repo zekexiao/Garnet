@@ -67,11 +67,11 @@ public:
 
             auto exc = mrb_obj_value(mrb_->exc);
 
-            auto backtraceVlist
+            auto backtraceVariantList
                 = Conversion::toQVariant(mrb_, mrb_get_backtrace(mrb_, exc)).toList();
             QStringList backtrace;
-            backtrace.reserve(backtraceVlist.size());
-            for (const auto &v : backtraceVlist) {
+            backtrace.reserve(backtraceVariantList.size());
+            for (const auto &v : backtraceVariantList) {
                 backtrace << v.toString();
             }
 
@@ -135,7 +135,7 @@ Engine::Engine(mrb_state *mrb, QObject *parent)
     , d(new Private(this, mrb))
 {}
 
-Engine::~Engine() {}
+Engine::~Engine() = default;
 
 Engine *Engine::findByMrb(mrb_state *mrb)
 {

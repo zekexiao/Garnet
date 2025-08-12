@@ -3,7 +3,6 @@
 #include "utils.h"
 #include "variadicargument.h"
 #include <array>
-#include <cstring>
 #include <QMetaMethod>
 #include <QMetaObject>
 #include <QObject>
@@ -48,8 +47,8 @@ bool tryInvoke(
 
     // convert arguments
     int argc = params.size();
-    std::array<int, 10> metaTypes;
-    std::array<void *, 10> buffers;
+    std::array<int, 10> metaTypes{};
+    std::array<void *, 10> buffers{};
 
     for (int i = 0; i < argc; ++i) {
         auto metaType = method.parameterType(i);

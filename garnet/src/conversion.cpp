@@ -81,7 +81,7 @@ QVariantHash qVariantHashLikeFromHash(mrb_state *mrb, mrb_value hash)
     resultHash.reserve(count);
 
     for (int i = 0; i < count; ++i) {
-        ArenaSaver as(mrb);
+        ArenaSaver inAs(mrb);
 
         auto key = keyPtr[i];
         auto value = mrb_hash_get(mrb, hash, key);
@@ -121,7 +121,7 @@ mrb_value qObjectStarToBridgeClass(mrb_state *mrb, QObject *object)
 
 mrb_value toMrbValue(mrb_state *mrb, const QVariant &variant)
 {
-    auto type = variant.userType();
+    auto type = variant.typeId();
     switch (type) {
     case QMetaType::QObjectStar:
         return qObjectStarToBridgeClass(mrb, variant.value<QObject *>());
@@ -205,7 +205,7 @@ QVariant toQVariant(mrb_state *mrb, mrb_value value)
             if (toVariant(mrb, value, &result))
                 return result;
         }
-        return QVariant();
+        return {};
     }
     }
 }
@@ -215,14 +215,14 @@ QObject *toQObject(mrb_state *mrb, mrb_value value)
     return toQVariant(mrb, value).value<QObject *>();
 }
 
-void registerConverter(const QList<int> &metaTypes, const ToValue func)
+void registerConverter(const QList<int> &metaTypes, const ToValue &func)
 {
     for (int metaType : metaTypes) {
         convertersToValue[metaType] = func;
     }
 }
 
-void registerConverter(const ToVariant func)
+void registerConverter(const ToVariant &func)
 {
     convertersToVariant << func;
 }

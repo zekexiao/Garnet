@@ -7,7 +7,7 @@ class TestGarnetBridgeClass : public QObject
 {
     Q_OBJECT
 public:
-    explicit TestGarnetBridgeClass(QObject *parent = 0);
+    explicit TestGarnetBridgeClass(QObject *parent = nullptr);
 
 private slots:
     void testMethod();

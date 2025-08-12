@@ -23,6 +23,7 @@ void TestGarnetValue::testQObject()
     auto object = new QObject();
     auto result = reconvert(engine.mrbState(), QVariant::fromValue(object)).value<QObject *>();
     QCOMPARE(result, object);
+    delete object;
 }
 
 void TestGarnetValue::testInt()

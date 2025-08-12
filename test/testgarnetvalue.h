@@ -7,7 +7,7 @@ class TestGarnetValue : public QObject
 {
     Q_OBJECT
 public:
-    explicit TestGarnetValue(QObject *parent = 0);
+    explicit TestGarnetValue(QObject *parent = nullptr);
 private slots:
     void testQObject();
     void testInt();
