@@ -52,24 +52,22 @@ void TestGarnetValue::testString()
 
 void TestGarnetValue::testList()
 {
-    // TODO, fix this test, double float not always same
-    // Garnet::Engine engine;
-    // auto expected = QVariantList { (mrb_int)1, "234", 5.6 };
-    // auto result = reconvert(engine.mrbState(), expected).toList();
-    // QCOMPARE(result, expected);
+    Garnet::Engine engine;
+    auto expected = QVariantList{(mrb_int) 1, "234", 5.6};
+    auto result = reconvert(engine.mrbState(), expected).toList();
+    GARNET_TEST_COMPARE_QLIST(result, expected);
 }
 
 void TestGarnetValue::testHash()
 {
-    // TODO, fix this test, double float not always same
-    // Garnet::Engine engine;
-    // auto expected = QVariantHash { { "one", (mrb_int)1}, { "two", 2.0} };
-    // auto result = reconvert(engine.mrbState(), expected).toHash();
-    // QCOMPARE(result, expected);
-    //
-    // auto expected2 = QVariantHash { { "alpha", "str"}, { "bravo", (mrb_int)123}, { "3", 4.56 } };
-    // auto result2 = engine.evaluate("{ :alpha => 'str', 'bravo' => 123, 3 => 4.56 }").toHash();
-    // QCOMPARE(result2, expected2);
+    Garnet::Engine engine;
+    auto expected = QVariantHash{{"one", (mrb_int) 1}, {"two", 2.0}};
+    auto result = reconvert(engine.mrbState(), expected).toHash();
+    GARNET_TEST_COMPARE_QHASH(expected, result);
+
+    auto expected2 = QVariantHash{{"alpha", "str"}, {"bravo", (mrb_int) 123}, {"3", 4.56}};
+    auto result2 = engine.evaluate("{ :alpha => 'str', 'bravo' => 123, 3 => 4.56 }").toHash();
+    GARNET_TEST_COMPARE_QHASH(expected2, result2);
 }
 
 void TestGarnetValue::testSymbolToString()

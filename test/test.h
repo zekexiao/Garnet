@@ -4,6 +4,37 @@
 #include <Garnet/VariadicArgument>
 #include <QtTest>
 
+#define GARNET_TEST_COMPARE_QVARIANT(a, b) \
+    do { \
+        if (a.metaType() == QMetaType::fromType<double>() \
+            && b.metaType() == QMetaType::fromType<double>()) { \
+            QCOMPARE(a.toDouble(), b.toDouble()); \
+        } else { \
+            QCOMPARE(a, b); \
+        } \
+    } while (false)
+
+#define GARNET_TEST_COMPARE_QLIST(a, b) \
+    do { \
+        QCOMPARE(a.size(), b.size()); \
+        for (int i = 0; i < a.size(); ++i) { \
+            GARNET_TEST_COMPARE_QVARIANT(a[i], b[i]); \
+        } \
+    } while (false)
+
+#define GARNET_TEST_COMPARE_QHASH(a, b) \
+    do { \
+        QCOMPARE(a.size(), b.size()); \
+        for (auto it = a.begin(); it != a.end(); ++it) { \
+            auto bIt = b.find(it.key()); \
+            if (bIt == b.end()) { \
+                QVERIFY(false); \
+            } else { \
+                GARNET_TEST_COMPARE_QVARIANT(it.value(), bIt.value()); \
+            } \
+        } \
+    } while (false)
+
 class TestObject : public QObject
 {
     Q_OBJECT
