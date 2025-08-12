@@ -85,7 +85,7 @@ void TestGarnetBridgeClass::testQml()
     auto object = component.create();
     Garnet::Engine engine;
     engine.registerObject("test_object", object);
-    auto result = engine.evaluate("test_object.method(12, 3.4)").toString();
+    auto result = engine.evaluate("test_object.method(12, '3.4')").toString();
     QCOMPARE(result, QString("123.4"));
     delete object;
 }

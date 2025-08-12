@@ -7,6 +7,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+option(GARNET_BUILD_TESTS "Build tests" ON)
+
 find_package(Qt6 COMPONENTS Core Test Qml)
 if (NOT Qt6_FOUND)
     find_package(Qt5 COMPONENTS Core Test Qml)
@@ -29,12 +31,14 @@ add_library(Garnet SHARED
 target_include_directories(Garnet PUBLIC garnet/include)
 target_link_libraries(Garnet PRIVATE Qt::Core ${MRUBY_LIBRARIES})
 
-qt_add_resources(GarnetTestResources test/test.qrc)
-qt_add_executable(GarnetTest ${GarnetTestResources}
-        test/test.cpp
-        test/testgarnetbridgeclass.h test/testgarnetbridgeclass.cpp
-        test/testgarnetengine.h test/testgarnetengine.cpp
-        test/testgarnetvalue.h test/testgarnetvalue.cpp)
+if (GARNET_BUILD_TESTS)
+    qt_add_resources(GarnetTestResources test/test.qrc)
+    qt_add_executable(GarnetTest ${GarnetTestResources}
+            test/test.cpp
+            test/testgarnetbridgeclass.h test/testgarnetbridgeclass.cpp
+            test/testgarnetengine.h test/testgarnetengine.cpp
+            test/testgarnetvalue.h test/testgarnetvalue.cpp)
 
-add_test(NAME GarnetTest COMMAND GarnetTest)
-target_link_libraries(GarnetTest PRIVATE Garnet Qt::Test Qt::Qml)
+    add_test(NAME GarnetTest COMMAND GarnetTest)
+    target_link_libraries(GarnetTest PRIVATE Garnet Qt::Test Qt::Qml)
+endif()
