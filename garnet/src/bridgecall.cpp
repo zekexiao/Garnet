@@ -46,34 +46,34 @@ bool tryInvoke(
     }
 
     // convert arguments
-    int argc = params.size();
-    std::array<int, 10> metaTypes{};
+    auto argc = params.size();
+    std::array<QMetaType, 10> metaTypes{};
     std::array<void *, 10> buffers{};
 
     for (int i = 0; i < argc; ++i) {
-        auto metaType = method.parameterType(i);
+        auto metaType = method.parameterMetaType(i);
         metaTypes[i] = metaType;
 
-        if (metaType == QMetaType::QVariant) {
-            buffers[i] = QMetaType::create(metaType, &params[i]);
+        if (metaType == QMetaType::fromType<QVariant>()) {
+            buffers[i] = metaType.create(&params[i]);
         } else {
             auto converted = params[i];
             if (!converted.convert(metaType)) {
                 return false;
             }
-            buffers[i] = QMetaType::create(metaType, converted.data());
+            buffers[i] = metaType.create(converted.data());
         }
     }
 
     std::array<QGenericArgument, 10> args;
     for (int i = 0; i < argc; ++i) {
-        args[i] = QGenericArgument(QMetaType::typeName(metaTypes[i]), buffers[i]);
+        args[i] = QGenericArgument(metaTypes[i].name(), buffers[i]);
     }
 
     auto result = invokeFunc(args);
 
     for (int i = 0; i < argc; ++i) {
-        QMetaType::destroy(metaTypes[i], buffers[i]);
+        metaTypes[i].destroy(buffers[i]);
     }
 
     return result;
