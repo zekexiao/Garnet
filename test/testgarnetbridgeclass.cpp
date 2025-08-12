@@ -1,13 +1,12 @@
 #include "testgarnetbridgeclass.h"
 #include "test.h"
 #include <Garnet/Engine>
-#include <QQmlEngine>
 #include <QQmlComponent>
+#include <QQmlEngine>
 
-TestGarnetBridgeClass::TestGarnetBridgeClass(QObject *parent) :
-    QObject(parent)
-{
-}
+TestGarnetBridgeClass::TestGarnetBridgeClass(QObject *parent)
+    : QObject(parent)
+{}
 
 void TestGarnetBridgeClass::testMethod()
 {

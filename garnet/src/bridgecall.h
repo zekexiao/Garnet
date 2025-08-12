@@ -14,7 +14,6 @@ namespace Garnet {
 class BridgeCall
 {
 public:
-
     BridgeCall(mrb_state *mrb, mrb_value self);
 
     // for constructors
@@ -29,7 +28,6 @@ public:
     static mrb_value getterFunc(mrb_state *mrb, mrb_value self);
 
 private:
-
     QMetaProperty accessedProperty(bool setter);
 
     // all member variables have trivial destructors
@@ -39,7 +37,6 @@ private:
     const QMetaObject *metaObject_;
     QObject *object_;
 };
-
 
 } // namespace Garnet
 

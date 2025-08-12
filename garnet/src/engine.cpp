@@ -1,11 +1,11 @@
 #include "engine.h"
-#include "variadicargument.h"
 #include "bridgeclass.h"
 #include "conversion.h"
 #include "utils.h"
+#include "variadicargument.h"
 
-#include <QVariant>
 #include <QStringList>
+#include <QVariant>
 
 #include <mruby.h>
 #include <mruby/compile.h>
@@ -17,7 +17,6 @@ namespace Garnet {
 class Engine::Private
 {
 public:
-
     Private(Engine *engine, mrb_state *mrb);
     ~Private();
 
@@ -37,21 +36,24 @@ public:
 
     static void initializeGlobal();
 
-    void setHasError(bool hasError) {
+    void setHasError(bool hasError)
+    {
         if (hasError_ != hasError) {
             hasError_ = hasError;
             emit q->hasErrorChanged(hasError);
         }
     }
 
-    void setError(const QString &error) {
+    void setError(const QString &error)
+    {
         if (error_ != error) {
             error_ = error;
             emit q->errorChanged(error);
         }
     }
 
-    void setBacktrace(const QStringList &backtrace) {
+    void setBacktrace(const QStringList &backtrace)
+    {
         if (backtrace_ != backtrace) {
             backtrace_ = backtrace;
             emit q->backtraceChanged(backtrace);
@@ -65,7 +67,8 @@ public:
 
             auto exc = mrb_obj_value(mrb_->exc);
 
-            auto backtraceVlist = Conversion::toQVariant(mrb_, mrb_get_backtrace(mrb_, exc)).toList();
+            auto backtraceVlist
+                = Conversion::toQVariant(mrb_, mrb_get_backtrace(mrb_, exc)).toList();
             QStringList backtrace;
             backtrace.reserve(backtraceVlist.size());
             for (const auto &v : backtraceVlist) {
@@ -79,8 +82,7 @@ public:
             setHasError(true);
             setError(error);
             setBacktrace(backtrace);
-        }
-        else {
+        } else {
             setHasError(false);
             setError(QString());
             setBacktrace(QStringList());
@@ -90,8 +92,8 @@ public:
 
 QHash<mrb_state *, Engine *> Engine::Private::engines_;
 
-Engine::Private::Private(Engine *engine, mrb_state *mrb) :
-    q(engine)
+Engine::Private::Private(Engine *engine, mrb_state *mrb)
+    : q(engine)
 {
     initializeGlobal();
 
@@ -109,7 +111,8 @@ Engine::Private::Private(Engine *engine, mrb_state *mrb) :
 void Engine::Private::initializeGlobal()
 {
     static bool initialized = false;
-    if (initialized) return;
+    if (initialized)
+        return;
     initialized = true;
 
     qRegisterMetaType<VariadicArgument>("Garnet::VariadicArgument");
@@ -123,20 +126,16 @@ Engine::Private::~Private()
     engines_.remove(mrb_);
 }
 
-Engine::Engine(QObject *parent) :
-    Engine(nullptr, parent)
-{
-}
+Engine::Engine(QObject *parent)
+    : Engine(nullptr, parent)
+{}
 
-Engine::Engine(mrb_state *mrb, QObject *parent) :
-    QObject(parent),
-    d(new Private(this, mrb))
-{
-}
+Engine::Engine(mrb_state *mrb, QObject *parent)
+    : QObject(parent)
+    , d(new Private(this, mrb))
+{}
 
-Engine::~Engine()
-{
-}
+Engine::~Engine() {}
 
 Engine *Engine::findByMrb(mrb_state *mrb)
 {
@@ -215,4 +214,4 @@ void Engine::registerVariant(const QString &name, const QVariant &variant)
     mrb_define_method(d->mrb_, d->mrb_->kernel_module, byteArray, methodImpl, MRB_ARGS_ANY());
 }
 
-}
+} // namespace Garnet

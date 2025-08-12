@@ -9,7 +9,9 @@ class VariadicArgument
 {
 public:
     VariadicArgument() = default;
-    VariadicArgument(const QVariantList &vlist) : list_(vlist) {}
+    VariadicArgument(const QVariantList &vlist)
+        : list_(vlist)
+    {}
     QVariantList toList() const { return list_; }
 
 private:

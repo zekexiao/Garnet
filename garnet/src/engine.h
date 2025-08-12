@@ -2,8 +2,8 @@
 #define GARNET_ENGINE_H
 
 #include <QObject>
-#include <QVariant>
 #include <QStringList>
+#include <QVariant>
 
 struct mrb_state;
 
@@ -21,10 +21,9 @@ class Engine : public QObject
     Q_PROPERTY(const QStringList backtrace READ backtrace NOTIFY backtraceChanged)
 
 public:
-
-    explicit Engine(QObject *parent = 0);
-    explicit Engine(mrb_state *mrb, QObject *parent = 0);
-    ~Engine();
+    explicit Engine(QObject *parent = nullptr);
+    explicit Engine(mrb_state *mrb, QObject *parent = nullptr);
+    ~Engine() override;
 
     Q_INVOKABLE void collectGarbage();
     Q_INVOKABLE QVariant evaluate(const QString &script, const QString &fileName = "*script*");
@@ -33,7 +32,11 @@ public:
     QString error() const;
     QStringList backtrace() const;
 
-    template <class T> void registerClass() { registerClass(&T::staticMetaObject); }
+    template<class T>
+    void registerClass()
+    {
+        registerClass(&T::staticMetaObject);
+    }
     void registerClass(const QMetaObject *metaObject);
     Q_INVOKABLE void registerObject(const QString &name, QObject *object);
     Q_INVOKABLE void registerVariant(const QString &name, const QVariant &variant);
@@ -54,6 +57,6 @@ private:
     QScopedPointer<Private> d;
 };
 
-}
+} // namespace Garnet
 
 #endif // GARNET_ENGINE_H

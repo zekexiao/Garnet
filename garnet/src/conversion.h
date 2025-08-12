@@ -1,8 +1,8 @@
 #ifndef GARNET_CONVERSION_H
 #define GARNET_CONVERSION_H
 
-#include <QVariant>
 #include <mruby.h>
+#include <QVariant>
 
 namespace Garnet {
 

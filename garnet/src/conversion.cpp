@@ -1,10 +1,10 @@
 #include "conversion.h"
-#include "engine.h"
 #include "bridgeclass.h"
+#include "engine.h"
 #include "utils.h"
-#include <mruby/string.h>
 #include <mruby/array.h>
 #include <mruby/hash.h>
+#include <mruby/string.h>
 #include <QVector>
 
 namespace Garnet {
@@ -58,7 +58,7 @@ QVariantList qVariantListFromArray(mrb_state *mrb, mrb_value value)
     return list;
 }
 
-template <class T>
+template<class T>
 mrb_value qVariantHashLikeToHash(mrb_state *mrb, const T &hash)
 {
     auto value = mrb_hash_new(mrb);
@@ -69,7 +69,7 @@ mrb_value qVariantHashLikeToHash(mrb_state *mrb, const T &hash)
     return value;
 }
 
-template <class T>
+template<class T>
 QVariantHash qVariantHashLikeFromHash(mrb_state *mrb, mrb_value hash)
 {
     ArenaSaver as(mrb);
@@ -123,7 +123,6 @@ mrb_value toMrbValue(mrb_state *mrb, const QVariant &variant)
 {
     auto type = variant.userType();
     switch (type) {
-
     case QMetaType::QObjectStar:
         return qObjectStarToBridgeClass(mrb, variant.value<QObject *>());
 
@@ -200,8 +199,7 @@ QVariant toQVariant(mrb_state *mrb, mrb_value value)
         if (DATA_TYPE(value) == &BridgeData::dataType) {
             return QVariant::fromValue(qObjectStarFromBridgeClass(mrb, value));
         }
-    default:
-    {
+    default: {
         QVariant result;
         for (const auto &toVariant : convertersToVariant) {
             if (toVariant(mrb, value, &result))
@@ -228,7 +226,6 @@ void registerConverter(const ToVariant func)
 {
     convertersToVariant << func;
 }
-
 
 } // namespace Conversion
 

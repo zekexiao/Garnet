@@ -1,12 +1,11 @@
 #include "testgarnetvalue.h"
 #include "test.h"
-#include <Garnet/Engine>
 #include <Garnet/Conversion>
+#include <Garnet/Engine>
 
-TestGarnetValue::TestGarnetValue(QObject *parent) :
-    QObject(parent)
-{
-}
+TestGarnetValue::TestGarnetValue(QObject *parent)
+    : QObject(parent)
+{}
 
 namespace {
 
@@ -16,7 +15,7 @@ QVariant reconvert(mrb_state *mrb, const QVariant &variant)
     return Garnet::Conversion::toQVariant(mrb, value);
 }
 
-}
+} // namespace
 
 void TestGarnetValue::testQObject()
 {

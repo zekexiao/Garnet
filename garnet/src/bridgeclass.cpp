@@ -2,15 +2,15 @@
 #include "bridgecall.h"
 #include "engine.h"
 #include <mruby/class.h>
-#include <QMetaMethod>
 #include <QByteArray>
+#include <QMetaMethod>
 
 namespace Garnet {
 
-BridgeData::BridgeData(QObject *object, bool ownsObject) :
-    object_(object), ownsObject_(ownsObject)
-{
-}
+BridgeData::BridgeData(QObject *object, bool ownsObject)
+    : object_(object)
+    , ownsObject_(ownsObject)
+{}
 
 BridgeData::~BridgeData()
 {
@@ -28,16 +28,13 @@ QObject *BridgeData::getObject(mrb_value bridgeValue)
     return data->object_;
 }
 
-mrb_data_type BridgeData::dataType = {
-    "GarnetBridge",
-    [](mrb_state *, void *ptr) {
-        delete static_cast<BridgeData *>(ptr);
-    }
-};
+mrb_data_type BridgeData::dataType = {"GarnetBridge", [](mrb_state *, void *ptr) {
+                                          delete static_cast<BridgeData *>(ptr);
+                                      }};
 
 namespace {
 
-template <class F>
+template<class F>
 void registerMethods(const QMetaObject *metaObject, const F &defineFunc)
 {
     for (int i = 0; i < metaObject->methodCount(); ++i) {
@@ -57,8 +54,8 @@ void registerMethods(const QMetaObject *metaObject, const F &defineFunc)
 
 } // anonymous namespace
 
-BridgeClass::BridgeClass(mrb_state *mrb) :
-    mrb_(mrb)
+BridgeClass::BridgeClass(mrb_state *mrb)
+    : mrb_(mrb)
 {
     define();
 }
@@ -98,10 +95,9 @@ mrb_value BridgeClass::newFromObject(QObject *object, bool willOwnObject)
     return value;
 }
 
-StaticBridgeClassManager::StaticBridgeClassManager(mrb_state *mrb) :
-    mrb_(mrb)
-{
-}
+StaticBridgeClassManager::StaticBridgeClassManager(mrb_state *mrb)
+    : mrb_(mrb)
+{}
 
 void StaticBridgeClassManager::define(const QMetaObject *metaObject)
 {
@@ -115,7 +111,8 @@ void StaticBridgeClassManager::define(const QMetaObject *metaObject)
 
         DATA_TYPE(self) = &BridgeData::dataType;
         auto className = mrb_obj_classname(mrb, self);
-        auto metaObject = Engine::findByMrb(mrb)->staticBridgeClassManager().metaClassHash_[className];
+        auto metaObject
+            = Engine::findByMrb(mrb)->staticBridgeClassManager().metaClassHash_[className];
         if (metaObject) {
             auto object = BridgeCall(mrb, metaObject).callConstructor();
             DATA_PTR(self) = new BridgeData(object, true);
@@ -132,6 +129,5 @@ void StaticBridgeClassManager::define(const QMetaObject *metaObject)
 
     metaClassHash_[metaObject->className()] = metaObject;
 }
-
 
 } // namespace Garnet

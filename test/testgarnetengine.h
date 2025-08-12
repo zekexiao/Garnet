@@ -11,7 +11,6 @@ public:
 
 private slots:
     void testError();
-
 };
 
 #endif // TESTGARNETENGINE_H

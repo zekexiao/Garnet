@@ -1,12 +1,12 @@
 #include "bridgecall.h"
 #include "conversion.h"
-#include "variadicargument.h"
 #include "utils.h"
-#include <QObject>
-#include <QMetaObject>
-#include <QMetaMethod>
+#include "variadicargument.h"
 #include <array>
 #include <cstring>
+#include <QMetaMethod>
+#include <QMetaObject>
+#include <QObject>
 
 namespace Garnet {
 
@@ -27,12 +27,14 @@ QVariantList getVariantParams(mrb_state *mrb)
     return params;
 }
 
-template <class InvokeFunc>
-bool tryInvoke(const QMetaMethod &method, const QVariantList &originalParams, const InvokeFunc &invokeFunc)
+template<class InvokeFunc>
+bool tryInvoke(
+    const QMetaMethod &method, const QVariantList &originalParams, const InvokeFunc &invokeFunc)
 {
     // pack variadic args
     auto params = originalParams;
-    bool hasVArg = method.parameterType(method.parameterCount() - 1) == qMetaTypeId<VariadicArgument>();
+    bool hasVArg = method.parameterType(method.parameterCount() - 1)
+                   == qMetaTypeId<VariadicArgument>();
     if (hasVArg) {
         if (method.parameterCount() - 1 > originalParams.size())
             return false;
@@ -78,30 +80,37 @@ bool tryInvoke(const QMetaMethod &method, const QVariantList &originalParams, co
     return result;
 }
 
-
-QObject *invokeConstructor(const QMetaObject *metaObject, const QMetaMethod &method, const QVariantList &params)
+QObject *invokeConstructor(
+    const QMetaObject *metaObject, const QMetaMethod &method, const QVariantList &params)
 {
     QObject *object;
-    auto result = tryInvoke(method, params,
-                           [&](const std::array<QGenericArgument, 10> &args) {
-        object = metaObject->newInstance(args[0],args[1],args[2],args[3],args[4],
-                                         args[5],args[6],args[7],args[8],args[9]);
+    auto result = tryInvoke(method, params, [&](const std::array<QGenericArgument, 10> &args) {
+        object = metaObject->newInstance(
+            args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
         return object;
     });
     return result ? object : nullptr;
 }
 
-bool tryInvokeMethod(QObject *object, const QMetaMethod &method, const QVariantList &params, QVariant *returnValue)
+bool tryInvokeMethod(
+    QObject *object, const QMetaMethod &method, const QVariantList &params, QVariant *returnValue)
 {
-    return tryInvoke(method, params,
-                    [&](const std::array<QGenericArgument, 10> &args) {
-
+    return tryInvoke(method, params, [&](const std::array<QGenericArgument, 10> &args) {
         auto returnType = method.returnMetaType();
         auto returnBuffer = returnType.create();
-        bool result = method.invoke(object,
-                                    QGenericReturnArgument(returnType.name(), returnBuffer),
-                                    args[0],args[1],args[2],args[3],args[4],
-                                    args[5],args[6],args[7],args[8],args[9]);
+        bool result = method.invoke(
+            object,
+            QGenericReturnArgument(returnType.name(), returnBuffer),
+            args[0],
+            args[1],
+            args[2],
+            args[3],
+            args[4],
+            args[5],
+            args[6],
+            args[7],
+            args[8],
+            args[9]);
         if (result) {
             *returnValue = QVariant::fromMetaType(returnType, returnBuffer);
         }
@@ -110,18 +119,18 @@ bool tryInvokeMethod(QObject *object, const QMetaMethod &method, const QVariantL
     });
 }
 
-}
+} // namespace
 
-BridgeCall::BridgeCall(mrb_state *mrb, mrb_value self) :
-    mrb_(mrb)
+BridgeCall::BridgeCall(mrb_state *mrb, mrb_value self)
+    : mrb_(mrb)
 {
     object_ = Conversion::toQObject(mrb, self);
     methodName_ = mrb_sym2name(mrb, mrb->c->ci->mid);
     metaObject_ = object_->metaObject();
 }
 
-BridgeCall::BridgeCall(mrb_state *mrb, const QMetaObject *metaObject) :
-    mrb_(mrb)
+BridgeCall::BridgeCall(mrb_state *mrb, const QMetaObject *metaObject)
+    : mrb_(mrb)
 {
     object_ = nullptr;
     methodName_ = nullptr;
@@ -152,9 +161,11 @@ QObject *BridgeCall::callConstructor()
         }
     }
 
-    mrb_raisef(mrb, E_NOMETHOD_ERROR,
-               "no matching constructor for Qt class %S",
-               mrb_str_new_cstr(mrb, metaObject_->className()));
+    mrb_raisef(
+        mrb,
+        E_NOMETHOD_ERROR,
+        "no matching constructor for Qt class %S",
+        mrb_str_new_cstr(mrb, metaObject_->className()));
 
     return nullptr;
 }
@@ -186,10 +197,12 @@ mrb_value BridgeCall::callMethod()
         }
     }
 
-    mrb_raisef(mrb, E_NOMETHOD_ERROR,
-               "no matching method '%S' for Qt class %S",
-               mrb_str_new_cstr(mrb, methodName_),
-               mrb_str_new_cstr(mrb, metaObject_->className()));
+    mrb_raisef(
+        mrb,
+        E_NOMETHOD_ERROR,
+        "no matching method '%S' for Qt class %S",
+        mrb_str_new_cstr(mrb, methodName_),
+        mrb_str_new_cstr(mrb, metaObject_->className()));
 
     return mrb_nil_value();
 }
@@ -218,21 +231,24 @@ mrb_value BridgeCall::accessProperty(bool setter)
             property.write(object_, Conversion::toQVariant(mrb, value));
         }
         return Conversion::toMrbValue(mrb, property.read(object_));
-    }
-    while (false);
+    } while (false);
 
     if (noPropertyError) {
-        mrb_raisef(mrb, E_NOMETHOD_ERROR,
-                   "undefined property '%S' for Qt class %S",
-                   mrb_str_new_cstr(mrb, propertyName),
-                   mrb_str_new_cstr(mrb, metaObject_->className()));
+        mrb_raisef(
+            mrb,
+            E_NOMETHOD_ERROR,
+            "undefined property '%S' for Qt class %S",
+            mrb_str_new_cstr(mrb, propertyName),
+            mrb_str_new_cstr(mrb, metaObject_->className()));
     }
 
     if (noSetterError) {
-        mrb_raisef(mrb, E_NOMETHOD_ERROR,
-                   "read-only property '%S' for Qt class %S",
-                   mrb_str_new_cstr(mrb, propertyName),
-                   mrb_str_new_cstr(mrb, metaObject_->className()));
+        mrb_raisef(
+            mrb,
+            E_NOMETHOD_ERROR,
+            "read-only property '%S' for Qt class %S",
+            mrb_str_new_cstr(mrb, propertyName),
+            mrb_str_new_cstr(mrb, metaObject_->className()));
     }
 
     return mrb_nil_value();

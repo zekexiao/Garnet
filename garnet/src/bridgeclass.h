@@ -20,7 +20,6 @@ public:
     static QObject *getObject(mrb_value bridgeValue);
 
 private:
-
     QObject *object_;
     bool ownsObject_;
 };
@@ -46,7 +45,6 @@ public:
     void define(const QMetaObject *metaObject);
 
 private:
-
     mrb_state *mrb_ = nullptr;
     QHash<QByteArray, const QMetaObject *> metaClassHash_;
 };
